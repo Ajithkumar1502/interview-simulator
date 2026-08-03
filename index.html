@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Simulator Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== Ambient background ===== -->
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+  </div>
+
+  <!-- ===== Top navigation ===== -->
+  <header class="nav">
+    <a class="brand" href="#" data-nav="home">
+      <span class="brand-mark">IS</span>
+      <span class="brand-text">Interview&nbsp;Simulator<span class="brand-pro">Pro</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <button class="nav-link" data-nav="home">Home</button>
+      <button class="nav-link" data-nav="dashboard">Dashboard</button>
+      <button class="nav-link" data-nav="achievements">Achievements</button>
+      <button class="nav-link" data-nav="settings">Settings</button>
+    </nav>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+      <span class="theme-icon">🌙</span>
+    </button>
+  </header>
+
+  <main id="app">
+
+    <!-- ================= HOME ================= -->
+    <section class="screen active" data-screen="home">
+      <div class="hero">
+        <p class="eyebrow">Practice · Score · Improve</p>
+        <h1 class="hero-title">Rehearse the room<br />before you're <em>in</em> it.</h1>
+        <p class="hero-sub">Ten questions, a live clock, and honest feedback after every answer. Pick a track and sit the interview like it's real.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" data-nav="category">Start interview</button>
+          <button class="btn btn-ghost btn-lg" data-nav="dashboard">View dashboard</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-num" id="statQuestions">120</span>
+            <span class="stat-label">Questions available</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statCategories">4</span>
+            <span class="stat-label">Categories</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statBest">0<small>%</small></span>
+            <span class="stat-label">Best score</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statCompleted">0</span>
+            <span class="stat-label">Completed interviews</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATEGORY ================= -->
+    <section class="screen" data-screen="category">
+      <div class="section-head">
+        <h2>Choose your track</h2>
+        <p>Each interview draws ten questions at random — no repeats.</p>
+      </div>
+      <div class="category-grid" id="categoryGrid"><!-- injected --></div>
+
+      <div class="section-head" style="margin-top:2.5rem">
+        <h2>Set the difficulty</h2>
+        <p>Mixed pulls from every level.</p>
+      </div>
+      <div class="difficulty-row" id="difficultyRow">
+        <button class="diff-chip" data-diff="Mixed">Mixed</button>
+        <button class="diff-chip" data-diff="Easy">Easy</button>
+        <button class="diff-chip" data-diff="Medium">Medium</button>
+        <button class="diff-chip" data-diff="Hard">Hard</button>
+      </div>
+
+      <div class="category-cta">
+        <button class="btn btn-primary btn-lg" id="beginBtn" disabled>Pick a track to begin</button>
+      </div>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section class="screen" data-screen="quiz">
+      <div class="quiz-topbar">
+        <div class="quiz-meta">
+          <span class="pill pill-cat" id="qCategory">—</span>
+          <span class="pill pill-diff" id="qDifficulty">—</span>
+          <span class="pill" id="qCount">Q1 / 10</span>
+        </div>
+        <div class="quiz-metrics">
+          <span class="score-chip">Score <b id="qScore">0</b></span>
+          <div class="timer" id="timerWrap">
+            <svg class="timer-ring" viewBox="0 0 44 44" aria-hidden="true">
+              <circle class="timer-track" cx="22" cy="22" r="19"></circle>
+              <circle class="timer-fill" id="timerFill" cx="22" cy="22" r="19"></circle>
+            </svg>
+            <span class="timer-num" id="timerNum">30</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+
+      <div class="q-card" id="qCard">
+        <p class="q-index" id="qIndexLabel">Question 1</p>
+        <h3 class="q-text" id="qText">Loading…</h3>
+        <div class="options" id="options"><!-- injected --></div>
+        <div class="feedback" id="feedback" hidden>
+          <p class="feedback-verdict" id="feedbackVerdict"></p>
+          <p class="feedback-answer" id="feedbackAnswer"></p>
+          <p class="feedback-explain" id="feedbackExplain"></p>
+        </div>
+      </div>
+
+      <div class="quiz-controls">
+        <button class="btn btn-ghost" id="prevBtn">Previous</button>
+        <button class="btn btn-ghost" id="quitBtn">Quit</button>
+        <button class="btn btn-primary" id="nextBtn">Next</button>
+        <button class="btn btn-primary" id="submitBtn" hidden>Finish interview</button>
+      </div>
+    </section>
+
+    <!-- ================= RESULT ================= -->
+    <section class="screen" data-screen="result">
+      <div class="result-head">
+        <div class="dial">
+          <svg viewBox="0 0 120 120" class="dial-svg" aria-hidden="true">
+            <circle class="dial-track" cx="60" cy="60" r="52"></circle>
+            <circle class="dial-fill" id="dialFill" cx="60" cy="60" r="52"></circle>
+          </svg>
+          <div class="dial-center">
+            <span class="dial-pct" id="resPct">0%</span>
+            <span class="dial-label" id="resRating">—</span>
+          </div>
+        </div>
+        <div class="result-summary">
+          <h2 id="resHeadline">Interview complete</h2>
+          <div class="res-stats">
+            <div><b id="resScore">0</b><span>Score</span></div>
+            <div><b id="resCorrect">0</b><span>Correct</span></div>
+            <div><b id="resWrong">0</b><span>Wrong</span></div>
+            <div><b id="resAccuracy">0%</b><span>Accuracy</span></div>
+            <div><b id="resTime">0:00</b><span>Time taken</span></div>
+          </div>
+          <div class="result-actions">
+            <button class="btn btn-primary" data-nav="category">New interview</button>
+            <button class="btn btn-ghost" id="viewReportBtn">View report</button>
+            <button class="btn btn-ghost" data-nav="dashboard">Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REPORT ================= -->
+    <section class="screen" data-screen="report">
+      <div class="section-head report-head-row">
+        <div>
+          <h2>Interview report</h2>
+          <p id="reportMeta">—</p>
+        </div>
+        <div class="report-tools">
+          <button class="btn btn-ghost" onclick="window.print()">Print / Save PDF</button>
+          <button class="btn btn-ghost" data-nav="result">Back</button>
+        </div>
+      </div>
+      <div class="report-list" id="reportList"><!-- injected --></div>
+    </section>
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="screen" data-screen="dashboard">
+      <div class="section-head"><h2>Your dashboard</h2><p>Everything you've done so far, at a glance.</p></div>
+      <div class="dash-grid">
+        <div class="stat-card"><span class="stat-num" id="dashHigh">0<small>%</small></span><span class="stat-label">Highest score</span></div>
+        <div class="stat-card"><span class="stat-num" id="dashTotal">0</span><span class="stat-label">Total interviews</span></div>
+        <div class="stat-card"><span class="stat-num" id="dashAvg">0<small>%</small></span><span class="stat-label">Average score</span></div>
+      </div>
+      <div class="section-head sub"><h3>Category performance</h3></div>
+      <div class="cat-perf" id="catPerf"><!-- injected --></div>
+      <div class="section-head sub"><h3>Recent attempts</h3></div>
+      <div class="recent-list" id="recentList"><!-- injected --></div>
+    </section>
+
+    <!-- ================= ACHIEVEMENTS ================= -->
+    <section class="screen" data-screen="achievements">
+      <div class="section-head"><h2>Achievements</h2><p>Badges unlock as you practice.</p></div>
+      <div class="badge-grid" id="badgeGrid"><!-- injected --></div>
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+    <section class="screen" data-screen="settings">
+      <div class="section-head"><h2>Settings</h2><p>Preferences are stored on this device only.</p></div>
+      <div class="settings-panel">
+        <div class="setting-row">
+          <div><b>Theme</b><span>Switch between light and dark.</span></div>
+          <div class="seg" id="themeSeg">
+            <button data-theme-set="light">Light</button>
+            <button data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><b>Sound effects</b><span>Beeps on answer and time-up.</span></div>
+          <div class="seg" id="soundSeg">
+            <button data-sound-set="on">On</button>
+            <button data-sound-set="off">Off</button>
+          </div>
+        </div>
+        <div class="setting-row danger">
+          <div><b>Clear history</b><span>Remove past attempts and reports.</span></div>
+          <button class="btn btn-warn" id="clearHistoryBtn">Clear history</button>
+        </div>
+        <div class="setting-row danger">
+          <div><b>Reset everything</b><span>Wipe scores, badges, and history.</span></div>
+          <button class="btn btn-warn" id="resetAllBtn">Reset progress</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
